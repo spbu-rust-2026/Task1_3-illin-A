@@ -1,3 +1,29 @@
+use std::fs::File;
+use std::io::{self, Read};
+
 fn main() {
-    println!("Hello, world!");
+    let mut path = String::new();
+
+    if io::stdin().read_to_string(&mut path).is_err() {
+        println!("failure");
+        return;
+    }
+
+    let trimmed_path = path.trim_end_matches(['\r', '\n', '\0']).trim();
+
+    if trimmed_path.is_empty() {
+        println!("failure");
+        return;
+    }
+
+    match File::open(trimmed_path) {
+        Ok(mut file) => {
+            let mut buffer = [0; 1];
+            match file.read(&mut buffer) {
+                Ok(_) => println!("success"),
+                Err(_) => println!("failure"),
+            }
+        }
+        Err(_) => println!("failure"),
+    }
 }
