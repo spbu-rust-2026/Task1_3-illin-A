@@ -1,8 +1,9 @@
-use std::fs;
+use std::fs::File;
 use std::io::{self, Read};
 
 fn main() {
     let mut path = String::new();
+
     if io::stdin().read_to_string(&mut path).is_err() {
         println!("failure");
         return;
@@ -15,8 +16,14 @@ fn main() {
         return;
     }
 
-    match fs::read(trimmed_path) {
-        Ok(_) => println!("success"),
+    match File::open(trimmed_path) {
+        Ok(mut file) => {
+            let mut buffer = [0; 1];
+            match file.read(&mut buffer) {
+                Ok(_) => println!("success"),
+                Err(_) => println!("failure"),
+            }
+        }
         Err(_) => println!("failure"),
     }
 }
